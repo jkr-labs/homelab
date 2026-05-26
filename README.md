@@ -1,6 +1,8 @@
 # JKR LAB — Homelab
 
-> A single Lenovo M720q Tiny running Proxmox VE with 2 VMs and 20 LXC containers — organized across 8 service categories with full network segmentation, remote access via Tailscale, and local HTTPS via Caddy with automatic TLS certificates via Cloudflare DNS-01 challenge.
+> A single Lenovo M720q Tiny running Proxmox VE with 2 VMs and 22 LXC containers — organized across 8 service categories with full network segmentation, remote access via Tailscale, and local HTTPS via Caddy with automatic TLS certificates via Cloudflare DNS-01 challenge.
+
+![Homepage Dashboard](homepage-dashboard/assets/homepage-dashboard.gif)
 
 ---
 
