@@ -1,0 +1,107 @@
+# =============================================================================
+# Homepage Bookmarks Configuration
+# https://gethomepage.dev/configs/bookmarks/
+#
+# This file defines quick-access bookmark links displayed on the Homepage
+# dashboard, separate from the monitored service cards in services.yaml.
+#
+# Bookmarks vs Services:
+#   - Services  (services.yaml): Internal self-hosted apps with live widgets,
+#                                reverse proxied through Caddy on jkr-lab.ca
+#   - Bookmarks (this file):     External websites and reference links,
+#                                no monitoring or widget data
+#
+# Each bookmark entry requires:
+#   - abbr: Short 2-letter abbreviation displayed as the bookmark icon
+#   - href: Full URL of the bookmark target
+#
+# Groups here are independent of services.yaml groups — Homepage displays
+# them in a separate bookmarks section. Group names do not need to match
+# settings.yaml layout since bookmarks use their own layout section.
+#
+# Note: The "Security" group name here is intentionally separate from the
+# "Security" service group in services.yaml — Homepage treats bookmarks and
+# services as distinct namespaces so there is no conflict.
+#
+# No environment variables are used in this file — all values are public URLs.
+# =============================================================================
+
+# =============================================================================
+# Tech & Development
+# Reference docs, tools and repositories used in the lab.
+# =============================================================================
+- Tech & Dev:
+    - GitHub:
+        - abbr: GH
+          href: https://github.com/jkr-labs
+    - Homepage Docs:
+        - abbr: HP
+          href: https://gethomepage.dev
+    - Proxmox Community Scripts:
+        - abbr: PS
+          href: https://community-scripts.github.io/ProxmoxVE/
+    - Proxmox Docs:
+        - abbr: PD
+          href: https://pve.proxmox.com/wiki/Main_Page
+
+# =============================================================================
+# Security
+# External security research and learning platforms.
+# =============================================================================
+- Security:
+    - CVE Details:
+        - abbr: CV
+          href: https://cvedetails.com
+    - Exploit DB:
+        - abbr: EX
+          href: https://exploit-db.com
+    - HackTheBox:
+        - abbr: HB
+          href: https://hackthebox.com
+    - OWASP:
+        - abbr: OW
+          href: https://owasp.org
+    - TryHackMe:
+        - abbr: TH
+          href: https://tryhackme.com
+
+# =============================================================================
+# Tools
+# External services and platforms used to manage the lab infrastructure.
+# =============================================================================
+- Tools:
+    - Cloudflare:
+        - abbr: CF
+          href: https://dash.cloudflare.com
+    - Let's Encrypt:
+        - abbr: LE
+          href: https://letsencrypt.org
+    - Tailscale:
+        - abbr: TS
+          href: https://login.tailscale.com
+    - Unifi Site Manager:
+        - abbr: UN
+          href: https://unifi.ui.com
+
+# =============================================================================
+# Entertainment
+# =============================================================================
+- Entertainment:
+    - Twitch:
+        - abbr: TW
+          href: https://twitch.tv
+    - YouTube:
+        - abbr: YT
+          href: https://youtube.com
+
+# =============================================================================
+# Career
+# Job boards and professional profile links.
+# =============================================================================
+- Career:
+    - Arctic Wolf:
+        - abbr: AW
+          href: https://arcticwolf.wd1.myworkdayjobs.com/External?locations=f6cfbd603ca11001f6242e0b41250000
+    - LinkedIn:
+        - abbr: LI
+          href: https://www.linkedin.com/in/veer-singh-4169a1307/

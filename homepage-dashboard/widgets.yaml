@@ -1,0 +1,64 @@
+# =============================================================================
+# Homepage Widgets Configuration
+# https://gethomepage.dev/configs/info-widgets/
+#
+# This file defines the global info widgets displayed at the top of the
+# Homepage dashboard, above the service groups.
+#
+# Widgets shown (in order):
+#   - Greeting:   Personalized welcome message displayed on the dashboard
+#   - Weather:    Current conditions via OpenMeteo (no API key required).
+#                 Location and timezone are stored as environment variables
+#                 to avoid hardcoding coordinates in the config.
+#   - Search:     Google search bar with results opening in a new tab
+#   - DateTime:   Current date and time in 12-hour format
+#
+# Sensitive values (coordinates, timezone) are stored in environment variables.
+# See: https://gethomepage.dev/configs/settings/#environment-variables
+# Define them in: /opt/homepage/config/.env
+# =============================================================================
+
+# =============================================================================
+# Greeting
+# Personalized welcome message displayed at the top of the dashboard.
+# =============================================================================
+- greeting:
+    text_size: 4xl
+    text: "Why So Serious?"
+
+# =============================================================================
+# Weather
+# Uses OpenMeteo — no API key required.
+# Location coordinates and timezone stored as environment variables.
+# cache: 5 — refreshes every 5 minutes to avoid hammering the API.
+# =============================================================================
+- openmeteo:
+    latitude: "{{HOMEPAGE_VAR_WEATHER_LAT}}"
+    longitude: "{{HOMEPAGE_VAR_WEATHER_LON}}"
+    timezone: "{{HOMEPAGE_VAR_WEATHER_ZONE}}"
+    units: metric
+    cache: 5
+
+# =============================================================================
+# Search
+# Google search bar. focus: false prevents the cursor auto-focusing on load.
+# target: _blank opens results in a new tab.
+# =============================================================================
+- search:
+    provider: google
+    focus: false
+    target: _blank
+
+# =============================================================================
+# DateTime
+# Displays current date and time.
+# hourCycle and hour12 are both set to enforce 12-hour format consistently
+# across different browsers/locales.
+# =============================================================================
+- datetime:
+    text_size: xl
+    format:
+      timeStyle: short
+      dateStyle: long
+      hourCycle: h12
+      hour12: true

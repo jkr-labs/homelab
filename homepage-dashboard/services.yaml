@@ -1,0 +1,354 @@
+# =============================================================================
+# Homepage Services Configuration
+# https://gethomepage.dev/configs/services/
+#
+# This file defines all services displayed on the Homepage dashboard,
+# organized by logical network segment / function.
+#
+# Each service has:
+#   - icon:        PNG filename or Material Design Icon (mdi-*)
+#   - href:        Public HTTPS URL via Caddy reverse proxy
+#   - description: Short label shown under the service name
+#   - widget:      (optional) Live data pulled via the *.jkr-lab.wgt HTTP
+#                  internal domain to avoid HTTPS overhead on widget polling.
+#                  Widgets that use external APIs (Tailscale, Proxmox) connect
+#                  directly via IP or external URL.
+#
+# Sensitive values (API keys, passwords) are stored as environment variables.
+# Define them in: /opt/homepage/config/.env
+# Reference them as: {{HOMEPAGE_VAR_YOUR_VAR_NAME}}
+#
+# Network segments:
+#   192.168.1.x  — Gateway (OPNsense, AdGuard)
+#   192.168.2.x  — Control Plane (Proxmox, Home Assistant)
+#   192.168.3.x  — Infrastructure (Authentik, Portainer)
+#   192.168.4.x  — Security (Wazuh)
+#   192.168.5.x  — Observability (Grafana, Prometheus, Uptime Kuma, etc.)
+#   192.168.6.x  — Media (Immich, Jellyfin, Kavita, Navidrome)
+#   192.168.7.x  — Acquisition (qBittorrent, Seerr)
+#   192.168.8.x  — Media Pipeline (Bazarr, Kapowarr, Lidarr, Prowlarr,
+#                  Radarr, Sonarr)
+#   192.168.3.32 — Sandbox (intentionally vulnerable apps, LAN-isolated)
+#
+# Widget URL note:
+#   Most widgets use http://<service>.jkr-lab.wgt:<port> — these are internal
+#   HTTP-only hostnames resolved by AdGuard/local DNS to avoid TLS overhead
+#   on frequent widget polling. Caddy does not proxy these; they are LAN-only.
+#   Services without a .wgt entry either use the external API (Tailscale),
+#   a direct IP (Proxmox, OPNsense), or have no widget (Caddy, CrowdSec,
+#   Wazuh, Sandbox apps).
+# =============================================================================
+
+##############################################################################
+# Gateway
+##############################################################################
+- Gateway:
+
+    - OPNsense:
+        icon: opnsense.png
+        href: https://192.168.1.1
+        description: Firewall & Router
+        widget:
+          type: opnsense
+          url: https://192.168.1.1
+          username: "{{HOMEPAGE_VAR_OPNSENSE_KEY}}"
+          password: "{{HOMEPAGE_VAR_OPNSENSE_SECRET}}"
+
+    - AdGuard Home:
+        icon: adguard-home.png
+        href: https://adguard.jkr-lab.ca
+        description: DNS & Ad Blocker
+        widget:
+          type: adguard
+          url: http://192.168.1.1:8080
+          username: "{{HOMEPAGE_VAR_ADGUARD_USER}}"
+          password: "{{HOMEPAGE_VAR_ADGUARD_PASS}}"
+
+    - Caddy:
+        icon: caddy.png
+        href: https://caddy.jkr-lab.ca
+        description: Reverse Proxy
+        # No widget — Caddy's admin API is bound to localhost:2019 only.
+        # Exposing it externally would be a security risk.
+
+##############################################################################
+# Control Plane
+##############################################################################
+- Control Plane:
+
+    - Proxmox:
+        icon: proxmox.png
+        href: https://proxmox.jkr-lab.ca
+        description: Hypervisor
+        widget:
+          type: proxmox
+          url: https://192.168.2.22:8006
+          username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
+          node: jkr-lab
+
+    - Home Assistant:
+        icon: home-assistant.png
+        href: https://homeassistant.jkr-lab.ca
+        description: Home Automation
+        widget:
+          type: homeassistant
+          url: http://192.168.2.1:8123
+          key: "{{HOMEPAGE_VAR_HOME_ASSISTANT_KEY}}"
+          # Note: HA runs plain HTTP internally, so widget connects directly
+          # via IP rather than the .wgt domain. No .wgt entry exists for HA.
+
+##############################################################################
+# Infrastructure
+##############################################################################
+- Infrastructure:
+
+    - Authentik:
+        icon: authentik.png
+        href: https://authentik.jkr-lab.ca
+        description: SSO & Identity Provider
+        widget:
+          type: authentik
+          url: http://authentik.jkr-lab.wgt:9000
+          key: "{{HOMEPAGE_VAR_AUTHENTIK_KEY}}"
+
+    - Portainer:
+        icon: portainer.png
+        href: https://portainer.jkr-lab.ca
+        description: Container Manager
+        widget:
+          type: portainer
+          url: https://192.168.3.32:9443
+          env: 1
+          key: "{{HOMEPAGE_VAR_PORTAINER_KEY}}"
+          # Note: Portainer forces HTTPS internally, so widget connects
+          # directly via IP:9443. No .wgt entry exists for Portainer.
+
+    - Tailscale:
+        icon: tailscale.png
+        href: https://login.tailscale.com
+        description: Remote Access VPN
+        widget:
+          type: tailscale
+          deviceid: "{{HOMEPAGE_VAR_TAILSCALE_ID}}"
+          key: "{{HOMEPAGE_VAR_TAILSCALE_KEY}}"
+          # Note: Tailscale widget uses the external Tailscale API directly.
+          # No internal URL or .wgt entry needed.
+
+##############################################################################
+# Security
+##############################################################################
+- Security:
+
+    - CrowdSec:
+        icon: crowdsec.png
+        href: https://app.crowdsec.net/security-engines
+        description: Threat Intelligence
+        # No widget — CrowdSec widget requires the local agent API which is
+        # not exposed. Management is done via the CrowdSec cloud console.
+
+    - Wazuh:
+        icon: wazuh.png
+        href: https://wazuh.jkr-lab.ca
+        description: SIEM & Threat Monitor
+        # No widget — Homepage does not have a native Wazuh widget type.
+
+##############################################################################
+# Observability
+##############################################################################
+- Observability:
+
+    - Change Detection:
+        icon: changedetection.png
+        href: https://changedetection.jkr-lab.ca
+        description: Website Change Monitor
+        widget:
+          type: changedetectionio
+          url: http://changedetection.jkr-lab.wgt:5000
+          key: "{{HOMEPAGE_VAR_CHANGEDETECTION_KEY}}"
+
+    - Grafana:
+        icon: grafana.png
+        href: https://grafana.jkr-lab.ca
+        description: Metrics Dashboard
+        widget:
+          type: grafana
+          url: http://grafana.jkr-lab.wgt:3000
+          username: "{{HOMEPAGE_VAR_GRAFANA_USER}}"
+          password: "{{HOMEPAGE_VAR_GRAFANA_PASS}}"
+          key: "{{HOMEPAGE_VAR_GRAFANA_KEY}}"
+
+    - Prometheus:
+        icon: prometheus.png
+        href: https://prometheus.jkr-lab.ca/targets
+        description: Metrics Collector · /targets
+        widget:
+          type: prometheus
+          url: http://prometheus.jkr-lab.wgt:9090
+
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: https://uptime.jkr-lab.ca
+        description: Service Uptime Monitor
+        widget:
+          type: uptimekuma
+          url: http://uptime.jkr-lab.wgt:3001
+          slug: "{{HOMEPAGE_VAR_UPTIMEKUMA_SLUG}}"
+
+##############################################################################
+# Media
+##############################################################################
+- Media:
+
+    - Immich:
+        icon: immich.png
+        href: https://immich.jkr-lab.ca
+        description: Photo & Video Library
+        widget:
+          type: immich
+          url: http://immich.jkr-lab.wgt:2283
+          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
+          version: 2
+
+    - Jellyfin:
+        icon: jellyfin.png
+        href: https://jellyfin.jkr-lab.ca
+        description: Media Server
+        widget:
+          type: jellyfin
+          url: http://jellyfin.jkr-lab.wgt:8096
+          key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
+
+    - Kavita:
+        icon: kavita.png
+        href: https://kavita.jkr-lab.ca
+        description: Comics & Manga Library
+        widget:
+          type: kavita
+          url: http://kavita.jkr-lab.wgt:5000
+          username: "{{HOMEPAGE_VAR_KAVITA_USER}}"
+          password: "{{HOMEPAGE_VAR_KAVITA_PASS}}"
+
+    - Navidrome:
+        icon: navidrome.png
+        href: https://navidrome.jkr-lab.ca
+        description: Music Streaming
+        widget:
+          type: navidrome
+          url: http://navidrome.jkr-lab.wgt:4533
+          user: "{{HOMEPAGE_VAR_NAVIDROME_USER}}"
+          token: "{{HOMEPAGE_VAR_NAVIDROME_KEY}}"
+          salt: "{{HOMEPAGE_VAR_NAVIDROME_SALT}}"
+
+##############################################################################
+# Acquisition
+##############################################################################
+- Acquisition:
+
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: https://qbittorrent.jkr-lab.ca
+        description: Torrent Client
+        widget:
+          type: qbittorrent
+          url: http://qbittorrent.jkr-lab.wgt:8090
+          username: "{{HOMEPAGE_VAR_QBITTORRENT_USER}}"
+          password: "{{HOMEPAGE_VAR_QBITTORRENT_PASS}}"
+          enableLeechProgress: true
+
+    - Seerr:
+        icon: overseerr.png
+        href: https://seerr.jkr-lab.ca
+        description: Media Requests
+        widget:
+          type: overseerr
+          url: http://seerr.jkr-lab.wgt:5055
+          key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
+
+##############################################################################
+# Media Pipeline
+##############################################################################
+- Media Pipeline:
+
+    - Bazarr:
+        icon: bazarr.png
+        href: https://bazarr.jkr-lab.ca
+        description: Subtitle Manager
+        widget:
+          type: bazarr
+          url: http://bazarr.jkr-lab.wgt:6767
+          key: "{{HOMEPAGE_VAR_BAZARR_KEY}}"
+
+    - Kapowarr:
+        icon: kapowarr.png
+        href: https://kapowarr.jkr-lab.ca
+        description: Comics & Manga Manager
+        widget:
+          type: kapowarr
+          url: http://kapowarr.jkr-lab.wgt:5656
+          key: "{{HOMEPAGE_VAR_KAPOWARR_KEY}}"
+
+    - Lidarr:
+        icon: lidarr.png
+        href: https://lidarr.jkr-lab.ca
+        description: Music Manager
+        widget:
+          type: lidarr
+          url: http://lidarr.jkr-lab.wgt:8686
+          key: "{{HOMEPAGE_VAR_LIDARR_KEY}}"
+
+    - Prowlarr:
+        icon: prowlarr.png
+        href: https://prowlarr.jkr-lab.ca
+        description: Indexer Manager
+        widget:
+          type: prowlarr
+          url: http://prowlarr.jkr-lab.wgt:9696
+          key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
+
+    - Radarr:
+        icon: radarr.png
+        href: https://radarr.jkr-lab.ca
+        description: Movie Manager
+        widget:
+          type: radarr
+          url: http://radarr.jkr-lab.wgt:7878
+          key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
+
+    - Sonarr:
+        icon: sonarr.png
+        href: https://sonarr.jkr-lab.ca
+        description: TV Series Manager
+        widget:
+          type: sonarr
+          url: http://sonarr.jkr-lab.wgt:8989
+          key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+
+##############################################################################
+# Sandbox
+# Intentionally vulnerable apps, isolated from internet.
+# Never expose to WAN. OPNsense firewall rules enforce network isolation.
+# No widgets — these apps have no Homepage widget support and are
+# monitoring targets in Uptime Kuma only.
+##############################################################################
+- Sandbox:
+
+    - DVGA:
+        icon: mdi-graphql
+        href: https://dvga.jkr-lab.ca
+        description: Damn Vulnerable GraphQL API
+
+    - DVWA:
+        icon: mdi-shield-bug-outline
+        href: https://dvwa.jkr-lab.ca
+        description: Damn Vulnerable Web App
+
+    - Juice Shop:
+        icon: mdi-cup-water
+        href: https://juiceshop.jkr-lab.ca
+        description: OWASP Juice Shop
+
+    - WebGoat:
+        icon: mdi-shield-bug-outline
+        href: https://webgoat.jkr-lab.ca/WebGoat
+        description: OWASP WebGoat
