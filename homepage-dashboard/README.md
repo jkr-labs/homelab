@@ -1,4 +1,4 @@
-​```
+```
 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 ▓▓                                                                            ▓▓
 ▓▓                 ██╗██╗  ██╗██████╗     ██╗      █████╗ ██████╗             ▓▓
@@ -11,8 +11,7 @@
 ▓▓         jkr-lab.ca  |  Proxmox  |  Self-Hosted  |  Always Breaking         ▓▓
 ▓▓                                                                            ▓▓
 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-​```
-
+```
 Self-hosted start page for JKR LAB built with [Homepage](https://gethomepage.dev). Single pane of glass for the entire lab — live service status, real-time metrics, and quick access to every container and VM.
 
 For setup refer to the [official Homepage documentation](https://gethomepage.dev).
