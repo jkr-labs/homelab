@@ -16,7 +16,7 @@
 
 Self-hosted start page for JKR LAB built with [Homepage](https://gethomepage.dev) — live service status, real-time metrics, and quick access to every container and VM.
 
-![Homepage Dashboard](homepage-dashboard/assets/Homepage-dashboard.jpg)
+![Homepage Dashboard](homepage-dashboard/assets/Homepage-dashboard.png)
 
 For setup refer to the [official Homepage documentation](https://gethomepage.dev).
 
