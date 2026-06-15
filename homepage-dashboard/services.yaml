@@ -2,41 +2,24 @@
 # Homepage Services Configuration
 # https://gethomepage.dev/configs/services/
 #
-# This file defines all services displayed on the Homepage dashboard,
-# organized by logical network segment / function.
-#
-# Each service has:
-#   - icon:        PNG filename or Material Design Icon (mdi-*)
-#   - href:        Public HTTPS URL via Caddy reverse proxy
-#   - description: Short label shown under the service name
-#   - widget:      (optional) Live data pulled via the *.jkr-lab.wgt HTTP
-#                  internal domain to avoid HTTPS overhead on widget polling.
-#                  Widgets that use external APIs (Tailscale, Proxmox) connect
-#                  directly via IP or external URL.
-#
-# Sensitive values (API keys, passwords) are stored as environment variables.
-# Define them in: /opt/homepage/config/.env
-# Reference them as: {{HOMEPAGE_VAR_YOUR_VAR_NAME}}
+# Sensitive values are stored as environment variables in:
+# /opt/homepage/config/.env
+# Referenced as: {{HOMEPAGE_VAR_YOUR_VAR_NAME}}
 #
 # Network segments:
-#   192.168.1.x  — Gateway (OPNsense, AdGuard)
-#   192.168.2.x  — Control Plane (Proxmox, Home Assistant)
-#   192.168.3.x  — Infrastructure (Authentik, Portainer)
-#   192.168.4.x  — Security (Wazuh)
-#   192.168.5.x  — Observability (Grafana, Prometheus, Uptime Kuma, etc.)
-#   192.168.6.x  — Media (Immich, Jellyfin, Kavita, Navidrome)
-#   192.168.7.x  — Acquisition (qBittorrent, Seerr)
-#   192.168.8.x  — Media Pipeline (Bazarr, Kapowarr, Lidarr, Prowlarr,
-#                  Radarr, Sonarr)
-#   192.168.3.32 — Sandbox (intentionally vulnerable apps, LAN-isolated)
+#   192.168.1.x  — Gateway (OPNsense, AdGuard, NPM)
+#   192.168.2.x  — Infrastructure (Proxmox, Portainer)
+#   192.168.3.x  — Security (Wazuh)
+#   192.168.4.x  — Observability (Grafana, Prometheus, Uptime Kuma)
+#   192.168.5.x  — Media (Immich, Jellyfin, Kavita, Navidrome)
+#   192.168.6.x  — Acquisition (qBittorrent, Seerr)
+#   192.168.7.x  — Media Pipeline (Bazarr, Prowlarr, Radarr, Sonarr)
 #
-# Widget URL note:
-#   Most widgets use http://<service>.jkr-lab.wgt:<port> — these are internal
-#   HTTP-only hostnames resolved by AdGuard/local DNS to avoid TLS overhead
-#   on frequent widget polling. Caddy does not proxy these; they are LAN-only.
-#   Services without a .wgt entry either use the external API (Tailscale),
-#   a direct IP (Proxmox, OPNsense), or have no widget (Caddy, CrowdSec,
-#   Wazuh, Sandbox apps).
+# Widget URLs use http://<service>.jkr-lab.wgt:<port> — internal hostnames
+# defined in /etc/hosts on the Homepage container, not proxied through NPM.
+# Service URLs use https://<service>.jkr-lab.ca — proxied through NPM,
+# DNS resolved via Cloudflare.
+# Services using direct IPs or external APIs are noted inline.
 # =============================================================================
 
 ##############################################################################
@@ -56,7 +39,7 @@
 
     - AdGuard Home:
         icon: adguard-home.png
-        href: https://adguard.jkr-lab.ca
+        href: http://192.168.1.1:8080
         description: DNS & Ad Blocker
         widget:
           type: adguard
@@ -64,17 +47,15 @@
           username: "{{HOMEPAGE_VAR_ADGUARD_USER}}"
           password: "{{HOMEPAGE_VAR_ADGUARD_PASS}}"
 
-    - Caddy:
-        icon: caddy.png
-        href: https://caddy.jkr-lab.ca
+    - Nginx Proxy Manager:
+        icon: nginx.png
+        href: https://nginx.jkr-lab.ca
         description: Reverse Proxy
-        # No widget — Caddy's admin API is bound to localhost:2019 only.
-        # Exposing it externally would be a security risk.
 
 ##############################################################################
-# Control Plane
+# Infrastructure
 ##############################################################################
-- Control Plane:
+- Infrastructure:
 
     - Proxmox:
         icon: proxmox.png
@@ -87,31 +68,6 @@
           password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
           node: jkr-lab
 
-    - Home Assistant:
-        icon: home-assistant.png
-        href: https://homeassistant.jkr-lab.ca
-        description: Home Automation
-        widget:
-          type: homeassistant
-          url: http://192.168.2.1:8123
-          key: "{{HOMEPAGE_VAR_HOME_ASSISTANT_KEY}}"
-          # Note: HA runs plain HTTP internally, so widget connects directly
-          # via IP rather than the .wgt domain. No .wgt entry exists for HA.
-
-##############################################################################
-# Infrastructure
-##############################################################################
-- Infrastructure:
-
-    - Authentik:
-        icon: authentik.png
-        href: https://authentik.jkr-lab.ca
-        description: SSO & Identity Provider
-        widget:
-          type: authentik
-          url: http://authentik.jkr-lab.wgt:9000
-          key: "{{HOMEPAGE_VAR_AUTHENTIK_KEY}}"
-
     - Portainer:
         icon: portainer.png
         href: https://portainer.jkr-lab.ca
@@ -119,21 +75,8 @@
         widget:
           type: portainer
           url: https://192.168.3.32:9443
-          env: 1
+          env: 3
           key: "{{HOMEPAGE_VAR_PORTAINER_KEY}}"
-          # Note: Portainer forces HTTPS internally, so widget connects
-          # directly via IP:9443. No .wgt entry exists for Portainer.
-
-    - Tailscale:
-        icon: tailscale.png
-        href: https://login.tailscale.com
-        description: Remote Access VPN
-        widget:
-          type: tailscale
-          deviceid: "{{HOMEPAGE_VAR_TAILSCALE_ID}}"
-          key: "{{HOMEPAGE_VAR_TAILSCALE_KEY}}"
-          # Note: Tailscale widget uses the external Tailscale API directly.
-          # No internal URL or .wgt entry needed.
 
 ##############################################################################
 # Security
@@ -144,19 +87,16 @@
         icon: crowdsec.png
         href: https://app.crowdsec.net/security-engines
         description: Threat Intelligence
-        # No widget — CrowdSec widget requires the local agent API which is
-        # not exposed. Management is done via the CrowdSec cloud console.
-
+ 
     - Wazuh:
         icon: wazuh.png
         href: https://wazuh.jkr-lab.ca
         description: SIEM & Threat Monitor
-        # No widget — Homepage does not have a native Wazuh widget type.
 
 ##############################################################################
-# Observability
+# Monitoring
 ##############################################################################
-- Observability:
+- Monitoring:
 
     - Change Detection:
         icon: changedetection.png
@@ -181,7 +121,7 @@
     - Prometheus:
         icon: prometheus.png
         href: https://prometheus.jkr-lab.ca/targets
-        description: Metrics Collector · /targets
+        description: Metrics Collector
         widget:
           type: prometheus
           url: http://prometheus.jkr-lab.wgt:9090
@@ -199,16 +139,6 @@
 # Media
 ##############################################################################
 - Media:
-
-    - Immich:
-        icon: immich.png
-        href: https://immich.jkr-lab.ca
-        description: Photo & Video Library
-        widget:
-          type: immich
-          url: http://immich.jkr-lab.wgt:2283
-          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
-          version: 2
 
     - Jellyfin:
         icon: jellyfin.png
@@ -279,24 +209,6 @@
           url: http://bazarr.jkr-lab.wgt:6767
           key: "{{HOMEPAGE_VAR_BAZARR_KEY}}"
 
-    - Kapowarr:
-        icon: kapowarr.png
-        href: https://kapowarr.jkr-lab.ca
-        description: Comics & Manga Manager
-        widget:
-          type: kapowarr
-          url: http://kapowarr.jkr-lab.wgt:5656
-          key: "{{HOMEPAGE_VAR_KAPOWARR_KEY}}"
-
-    - Lidarr:
-        icon: lidarr.png
-        href: https://lidarr.jkr-lab.ca
-        description: Music Manager
-        widget:
-          type: lidarr
-          url: http://lidarr.jkr-lab.wgt:8686
-          key: "{{HOMEPAGE_VAR_LIDARR_KEY}}"
-
     - Prowlarr:
         icon: prowlarr.png
         href: https://prowlarr.jkr-lab.ca
@@ -326,10 +238,7 @@
 
 ##############################################################################
 # Sandbox
-# Intentionally vulnerable apps, isolated from internet.
-# Never expose to WAN. OPNsense firewall rules enforce network isolation.
-# No widgets — these apps have no Homepage widget support and are
-# monitoring targets in Uptime Kuma only.
+# Intentionally vulnerable apps — LAN isolated, never exposed to WAN.
 ##############################################################################
 - Sandbox:
 

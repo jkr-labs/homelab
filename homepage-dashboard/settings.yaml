@@ -1,25 +1,19 @@
+root@homepage:/opt/homepage/config# cat settings.yaml
 # =============================================================================
 # Homepage Settings Configuration
 # https://gethomepage.dev/configs/settings/
 #
-# This file controls the global appearance, layout, and access settings
-# for the Homepage dashboard.
-#
 # Sections:
-#   - Branding:      Tab title shown in the browser
-#   - Background:    Wallpaper image with blur/brightness/opacity tuning
-#   - Appearance:    Theme, color palette, card style, header style
-#   - Layout:        Per-group display mode (row/column) and column count.
-#                    Group names here must exactly match group names in
-#                    services.yaml or they will not apply.
-#   - Miscellaneous: Language, version visibility
-#   - Access Control: Restricts which hostnames can serve the dashboard.
-#                    Prevents accidental exposure if a new reverse proxy
-#                    entry is added without thinking.
+#   - Branding:       Browser tab title
+#   - Background:     Wallpaper with blur/brightness/opacity tuning
+#   - Appearance:     Theme, color, card and header style
+#   - Layout:         Per-group display mode and column count.
+#                     Group names must exactly match services.yaml and
+#                     bookmarks.yaml or settings will not apply.
+#   - Miscellaneous:  Language, version visibility
+#   - Access Control: Restricts dashboard to allowed hostnames only.
 #
-# Sensitive values are stored in environment variables.
-# See: https://gethomepage.dev/configs/settings/#environment-variables
-# Define them in: /opt/homepage/config/.env
+# Sensitive values: /opt/homepage/config/.env
 # =============================================================================
 
 # =============================================================================
@@ -33,9 +27,9 @@ title: jkr-lab
 background:
   image: /images/jkr-lab_bg.jpg
   blur: sm
-  saturate: 70
+  saturate: 60
   brightness: 55
-  opacity: 75
+  opacity: 50
 
 # =============================================================================
 # Appearance
@@ -46,38 +40,50 @@ color: slate
 headerStyle: underlined
 
 # =============================================================================
-# Layout
-# Group names must exactly match those in services.yaml.
-# style: row   — services display left to right in a horizontal row
-# columns: N   — how many service cards per row before wrapping
+# Layout — Services
+# style: row  — services display left to right
+# columns: N  — cards per row before wrapping
 # =============================================================================
 layout:
   Gateway:
     style: row
     columns: 3
-  Control Plane:
-    style: row
-    columns: 3
   Infrastructure:
     style: row
-    columns: 3
+    columns: 2
   Security:
     style: row
     columns: 2
-  Observability:
+  Monitoring:
     style: row
     columns: 4
   Media:
     style: row
-    columns: 4
+    columns: 3
   Acquisition:
     style: row
     columns: 2
   Media Pipeline:
     style: row
-    columns: 3
+    columns: 2
   Sandbox:
     style: row
+    columns: 4
+
+# =============================================================================
+# Layout — Bookmarks
+# =============================================================================
+bookmarksStyle: row
+bookmarks:
+  Tech & Dev:
+    columns: 4
+  Security:
+    columns: 5
+  Tools:
+    columns: 4
+  Entertainment:
+    columns: 2
+  Career:
     columns: 2
 
 # =============================================================================
@@ -88,9 +94,7 @@ language: en
 
 # =============================================================================
 # Access Control
-# Restricts the dashboard to requests arriving via this hostname only.
-# If Homepage is ever accidentally exposed on a new domain or IP, it will
-# return 403 — preventing unintended access.
+# Returns 403 for any request not arriving via the allowed hostname.
 # =============================================================================
 allowed_hostnames:
   - homepage.jkr-lab.ca

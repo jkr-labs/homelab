@@ -2,33 +2,13 @@
 # Homepage Bookmarks Configuration
 # https://gethomepage.dev/configs/bookmarks/
 #
-# This file defines quick-access bookmark links displayed on the Homepage
-# dashboard, separate from the monitored service cards in services.yaml.
-#
-# Bookmarks vs Services:
-#   - Services  (services.yaml): Internal self-hosted apps with live widgets,
-#                                reverse proxied through Caddy on jkr-lab.ca
-#   - Bookmarks (this file):     External websites and reference links,
-#                                no monitoring or widget data
-#
-# Each bookmark entry requires:
-#   - abbr: Short 2-letter abbreviation displayed as the bookmark icon
-#   - href: Full URL of the bookmark target
-#
-# Groups here are independent of services.yaml groups — Homepage displays
-# them in a separate bookmarks section. Group names do not need to match
-# settings.yaml layout since bookmarks use their own layout section.
-#
-# Note: The "Security" group name here is intentionally separate from the
-# "Security" service group in services.yaml — Homepage treats bookmarks and
-# services as distinct namespaces so there is no conflict.
-#
-# No environment variables are used in this file — all values are public URLs.
+# External websites and reference links, separate from services.yaml.
+# No widgets or monitoring — quick-access links only.
+# No environment variables used — all values are public URLs.
 # =============================================================================
 
 # =============================================================================
-# Tech & Development
-# Reference docs, tools and repositories used in the lab.
+# Tech & Dev
 # =============================================================================
 - Tech & Dev:
     - GitHub:
@@ -46,7 +26,6 @@
 
 # =============================================================================
 # Security
-# External security research and learning platforms.
 # =============================================================================
 - Security:
     - CVE Details:
@@ -67,7 +46,6 @@
 
 # =============================================================================
 # Tools
-# External services and platforms used to manage the lab infrastructure.
 # =============================================================================
 - Tools:
     - Cloudflare:
@@ -96,7 +74,6 @@
 
 # =============================================================================
 # Career
-# Job boards and professional profile links.
 # =============================================================================
 - Career:
     - Arctic Wolf:
